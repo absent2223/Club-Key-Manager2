@@ -1,5 +1,10 @@
 {
     "LogChannel":"",
     "Token":"",
-    "ModeConsole":"false"
+    "ModeConsole":"false",
+    "Slack":{
+        "Use":"false",
+        "APItoken":"",
+        "ChannelName":""
+    }
 }
