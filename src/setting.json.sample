@@ -4,7 +4,6 @@
     "ModeConsole":"false",
     "Slack":{
         "Use":"false",
-        "APItoken":"",
-        "ChannelName":""
+        "WebhookUrl":""
     }
 }

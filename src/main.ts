@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, GatewayIntentBits, Events, TextChannel, EmbedBuilder, PresenceStatusData} from 'discord.js'
 import fs from 'fs'
 import path from 'path'
+import {messagingSlack, createMessage} from './slack'
 
 const settings = JSON.parse(fs.readFileSync(path.resolve(__dirname,'./setting.json'),"utf8"))
 
@@ -24,6 +25,8 @@ const string2boolean = (value: string | null | undefined): boolean => {
 }//文字列をbooleanにする.下で操作卓モードにするか決める時に使う.
 
 const mode_console = string2boolean(settings.ModeConsole)//jsonファイルから操作卓モードにするかを決定する.
+
+const isUseSlack = string2boolean(settings.Slack.Use)
 
 type Key = 'BORROW' | 'OPEN' | 'CLOSE' | 'RETURN'//鍵の状態の種類
 
@@ -147,15 +150,21 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!presence) {throw Error('presence is undefined')}
 
     interaction.client.user.setPresence(presence)//Presenceを更新する
+
+    const username = interaction.user.tag
+    const userIconUrl = interaction.user.avatarURL()
     
     const embed = new EmbedBuilder()//鍵になにかした時のメッセージを作る
         .setColor(0x0099FF)//水色っぽい色
-        .setAuthor({name: interaction.user.tag, iconURL:interaction.user.avatarURL()??undefined})//ボタンを押した人のユーザー名とアイコンを取得する
+        .setAuthor({name: username, iconURL:userIconUrl??undefined})//ボタンを押した人のユーザー名とアイコンを取得する
         .setTitle(`${label}`)//行った操作を表示する
         .setTimestamp()
     await interaction.reply({
         embeds:[embed],
         components:[buttonSet]
     })
+    if (isUseSlack) {
+        messagingSlack(createMessage(username)(label))(settings.Slack.WebhookUrl)
+    }
 }) 
 client.login(token)
