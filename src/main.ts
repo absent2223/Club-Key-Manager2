@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import {messagingSlack, createMessage} from './slack'
 
-const settings = JSON.parse(fs.readFileSync(path.resolve(__dirname,'./setting.json'),"utf8"))
+const settings = JSON.parse(fs.readFileSync(path.resolve(__dirname,'../src/setting.json'),"utf8"))
 
 const client = new Client({
     intents: [
